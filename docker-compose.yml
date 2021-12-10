@@ -1,0 +1,35 @@
+version: "3.7"
+services:
+  app:
+    build:
+      args:
+        user: dev
+        uid: 1000
+      context: ./
+      dockerfile: dockers/Dockerfile
+    image: winner2
+    container_name: winner2-app
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+      - ./dockers/php/php.ini:/usr/local/etc/php/conf.d/php.ini
+      - ./dockers/crontab:/etc/cron.d/ts-cron
+    networks:
+      - winner2_net
+
+  nginx:
+    image: nginx:alpine
+    container_name: winner2-nginx
+    restart: unless-stopped
+    ports:
+      - 80:80
+    volumes:
+      - ./:/var/www
+      - ./dockers/nginx:/etc/nginx/conf.d/
+    networks:
+      - winner2_net
+
+networks:
+  winner2_net:
+    driver: bridge
